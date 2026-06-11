@@ -1,0 +1,28 @@
+# private source materials — NEVER publish (résumés, essay, personal docs, game source)
+PORTFOLIO/
+.extracted/
+.idea/
+
+# build output
+dist/
+.output/
+
+# dependencies
+node_modules/
+
+# astro
+.astro/
+
+# environment
+.env
+.env.production
+
+# logs
+*.log
+npm-debug.log*
+
+# os / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json

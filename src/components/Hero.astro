@@ -1,0 +1,27 @@
+---
+import { site, hero } from "../config";
+import { inlineFmt } from "../lib/fmt";
+---
+
+<header id="top" class="hero wrap">
+  <div class="meta reveal">
+    {
+      site.available && (
+        <span class="avail"><span class="pip" /> Open to research, roles & collaborations</span>
+      )
+    }
+    <span>·</span>
+    <span>{site.education}</span>
+  </div>
+
+  <h1 class="reveal" set:html={inlineFmt(hero.headline)} />
+
+  <canvas class="hero-osc reveal" aria-hidden="true"></canvas>
+
+  <p class="subhead reveal" data-d="1">{hero.subhead}</p>
+
+  <div class="actions reveal" data-d="2">
+    <a href="#work" class="btn btn-primary">See the work</a>
+    <a href={`mailto:${site.email}`} class="btn btn-ghost">Email me</a>
+  </div>
+</header>

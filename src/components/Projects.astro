@@ -1,0 +1,107 @@
+---
+import { projects } from "../config";
+import { inlineFmt } from "../lib/fmt";
+import SectionHead from "./SectionHead.astro";
+
+const featured = projects.filter((p) => p.featured);
+const supporting = projects.filter((p) => !p.featured);
+const isNum = (v: string) => /^\d+$/.test(v);
+---
+
+<section id="work">
+  <div class="wrap">
+    <SectionHead num="02" title="Selected work" />
+
+    {
+      featured.map((p) => (
+        <article class="proj-featured reveal">
+          <div class="proj-meta">
+            <span class="kind">{p.kind}</span>
+            <span class="year">{p.year}</span>
+          </div>
+          <h3>{p.title}</h3>
+          <p class="proj-oneliner">{p.oneLiner}</p>
+
+          {p.readouts && (
+            <div class="readouts">
+              {p.readouts.map((r) => (
+                <div class="readout">
+                  <span class="r-val" data-count={isNum(r.v) ? r.v : undefined}>
+                    {r.v}
+                  </span>
+                  <span class="r-label">{r.l}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <ul class="highlights two">
+            {p.highlights.map((h) => (
+              <li set:html={inlineFmt(h)} />
+            ))}
+          </ul>
+
+          <div class="chips stack">
+            {p.stack?.map((s) => <span class="chip">{s}</span>)}
+          </div>
+          <div class="chips">
+            {p.tags.map((t) => <span class="chip">{t}</span>)}
+          </div>
+
+          <div class="proj-actions">
+            {(p.links.github || p.links.demo) && (
+              <div class="proj-links">
+                {p.links.demo && (
+                  <a href={p.links.demo} target="_blank" rel="noopener noreferrer">
+                    Play / Demo ↗
+                  </a>
+                )}
+                {p.links.github && (
+                  <a href={p.links.github} target="_blank" rel="noopener noreferrer">
+                    Source ↗
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+
+          <details class="fullwrite">
+            <summary>Full write-up</summary>
+            <div class="prose" style="font-size:1.08rem">
+              <p>{p.body}</p>
+            </div>
+          </details>
+        </article>
+      ))
+    }
+
+    <div class="proj-support">
+      {
+        supporting.map((p) => (
+          <article class="scard reveal">
+            <div class="proj-meta">
+              <span class="kind">{p.kind}</span>
+              <span class="year">{p.year}</span>
+            </div>
+            <h4>{p.title}</h4>
+            <p class="s-one">{p.oneLiner}</p>
+            <ul class="highlights">
+              {p.highlights.slice(0, 4).map((h) => (
+                <li set:html={inlineFmt(h)} />
+              ))}
+            </ul>
+            <div class="chips">
+              {p.tags.map((t) => <span class="chip">{t}</span>)}
+            </div>
+            <details class="fullwrite">
+              <summary>Full write-up</summary>
+              <div class="prose" style="font-size:1rem">
+                <p>{p.body}</p>
+              </div>
+            </details>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

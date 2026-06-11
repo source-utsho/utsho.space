@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#1f2a44" />
+  <text x="50%" y="53%" text-anchor="middle" dominant-baseline="central"
+    font-family="Georgia, 'Times New Roman', serif" font-size="38" font-weight="600"
+    fill="#faf8f4">U</text>
+  <circle cx="46" cy="45" r="4" fill="#c8742e" />
+</svg>

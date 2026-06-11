@@ -1,0 +1,52 @@
+---
+interface Props {
+  title: string;
+  demo?: string;
+}
+const { title, demo } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} — Utsho Lab</title>
+    <meta name="robots" content="noindex" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style is:global>
+      :root {
+        --paper: #faf8f4; --ink: #1a1a1a; --indigo: #1f2a44; --ember: #c8742e;
+        --navy: #05060c; --panel: #0c0e1e; --muted: #8a93ab;
+        --serif: "Newsreader", Georgia, serif;
+        --sans: "Inter", system-ui, sans-serif;
+        --mono: "JetBrains Mono", ui-monospace, monospace;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: auto; }
+      body { margin: 0; background: var(--navy); color: #e6e9f2; font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+      a { color: inherit; }
+      .lab-bar {
+        position: fixed; inset: 0 0 auto 0; z-index: 100; display: flex; align-items: center;
+        justify-content: space-between; padding: 0.9rem 1.4rem; pointer-events: none;
+        font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+        color: var(--muted); mix-blend-mode: difference;
+      }
+      .lab-bar a { pointer-events: auto; text-decoration: none; }
+      .lab-bar a:hover { color: #fff; }
+      .lab-bar .tag { color: var(--ember); }
+    </style>
+  </head>
+  <body>
+    <div class="lab-bar">
+      <a href="/lab">← Lab</a>
+      <span>{demo ? <span class="tag">{demo}</span> : null}</span>
+      <a href="/">Site →</a>
+    </div>
+    <slot />
+  </body>
+</html>

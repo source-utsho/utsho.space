@@ -1,0 +1,43 @@
+---
+import { projects } from "../config";
+---
+
+<section id="work">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Work</span>
+      <h2>Selected projects</h2>
+      <p>A few things I've built. More on the way.</p>
+    </div>
+
+    <div class="projects">
+      {
+        projects.map((p) => (
+          <article class:list={["card reveal", p.featured && "featured"]}>
+            <div class="card-head">
+              <h3>{p.title}</h3>
+              <div class="card-links">
+                {p.links.demo && (
+                  <a href={p.links.demo} target="_blank" rel="noopener noreferrer">
+                    Demo
+                  </a>
+                )}
+                {p.links.code && (
+                  <a href={p.links.code} target="_blank" rel="noopener noreferrer">
+                    Code
+                  </a>
+                )}
+              </div>
+            </div>
+            <p>{p.blurb}</p>
+            <div class="tags">
+              {p.tags.map((t) => (
+                <span>{t}</span>
+              ))}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,25 @@
+---
+import { contact, site } from "../config";
+import SectionHead from "./SectionHead.astro";
+---
+
+<section id="contact">
+  <div class="wrap">
+    <SectionHead num="06" title={contact.heading} />
+    <p class="contact-blurb reveal" data-d="1">{contact.blurb}</p>
+    <a class="contact-email reveal" data-d="1" href={`mailto:${contact.email}`}>
+      {contact.email}
+    </a>
+    <div class="contact-socials reveal" data-d="2">
+      <a href={site.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+      <a href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <span>© {new Date().getFullYear()} {site.fullName}</span>
+    <span>{site.location} · utsho.space</span>
+  </div>
+</footer>

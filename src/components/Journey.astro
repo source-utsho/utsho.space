@@ -1,0 +1,15 @@
+---
+import { journey } from "../config";
+import SectionHead from "./SectionHead.astro";
+---
+
+<section id="journey">
+  <div class="wrap">
+    <SectionHead num="03" title={journey.title} />
+    <div class="journey-inner">
+      <div class="prose dropcap lede-block reveal" data-d="1">
+        {journey.paragraphs.map((p) => <p>{p}</p>)}
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,37 @@
+---
+interface Props { title: string; tag?: string; hub?: boolean; }
+const { title, tag, hub } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} — Studio</title>
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style is:global>
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+      a { color: inherit; }
+    </style>
+  </head>
+  <body>
+    {!hub && (
+      <div style="position:fixed;inset:0 0 auto 0;z-index:200;display:flex;justify-content:space-between;padding:0.8rem 1.2rem;font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;mix-blend-mode:difference;color:#999;pointer-events:none;">
+        <a href="/studio" style="pointer-events:auto;text-decoration:none;">← studio</a>
+        {tag && <span>{tag}</span>}
+        <a href="/" style="pointer-events:auto;text-decoration:none;">site →</a>
+      </div>
+    )}
+    <slot />
+  </body>
+</html>

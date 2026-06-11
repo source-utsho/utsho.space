@@ -1,0 +1,13 @@
+---
+import { about } from "../config";
+import SectionHead from "./SectionHead.astro";
+---
+
+<section id="about">
+  <div class="wrap">
+    <SectionHead num="01" title={about.title} />
+    <div class="prose dropcap lede-block reveal" data-d="1">
+      {about.paragraphs.map((p) => <p>{p}</p>)}
+    </div>
+  </div>
+</section>

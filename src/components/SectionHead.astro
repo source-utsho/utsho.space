@@ -1,0 +1,18 @@
+---
+interface Props {
+  num: string;
+  title: string;
+}
+const { num, title } = Astro.props;
+---
+
+<div class="section-head reveal">
+  <span class="num">CH·{num}</span>
+  <h2>{title}</h2>
+  <svg class="signal" viewBox="0 0 420 24" preserveAspectRatio="none" aria-hidden="true">
+    <path
+      d="M0 12 H104 l6 -8 l5 16 l6 -16 l5 8 H214 l7 -7 l5 11 l5 -4 H326 l5 -3 l4 6 H420"
+    ></path>
+    <circle class="pulse" cx="417" cy="12" r="2.6"></circle>
+  </svg>
+</div>

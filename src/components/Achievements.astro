@@ -1,0 +1,23 @@
+---
+import { achievements } from "../config";
+import SectionHead from "./SectionHead.astro";
+---
+
+<section id="achievements">
+  <div class="wrap">
+    <SectionHead num="04" title="Recognition & beyond" />
+    <div class="ach-list">
+      {
+        achievements.map((a) => (
+          <details class="ach reveal">
+            <summary>
+              <span class="ach-t">{a.title}</span>
+              <span class="ach-m">{a.org}{a.year ? ` · ${a.year}` : ""}</span>
+            </summary>
+            <div class="ach-d">{a.detail}</div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
