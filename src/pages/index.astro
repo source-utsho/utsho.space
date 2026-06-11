@@ -388,7 +388,7 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
     const uniforms = {
       uMix: { value: 0 }, uTime: { value: 0 }, uSize: { value: 0.92 }, uIntro: { value: 1.0 },
       uMouse: { value: new THREE.Vector3(9999, 9999, 9999) }, uRepelR: { value: 6.5 },
-      cCyan: { value: new THREE.Color(0x3DE1C4) }, cIndigo: { value: new THREE.Color(0x6E73FF) }, cWhite: { value: new THREE.Color(0xEAFFFA) },
+      cCyan: { value: new THREE.Color(0x1DA98E) }, cIndigo: { value: new THREE.Color(0x3F45C0) }, cWhite: { value: new THREE.Color(0x9FD8CB) },
     };
     const NOISE = `
       vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;} vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
@@ -413,10 +413,10 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
         void main(){
           vec3 p = mix(aFrom, aTo, uMix);
           float env = sin(uMix * 3.14159);
-          float amp = 0.55 + env * 6.0 + uIntro * 10.0;
+          float amp = 0.45 + env * 4.0 + uIntro * 8.0;
           vec3 disp = snoiseVec3(p * 0.06 + uTime * 0.12) * amp; p += disp;
           vec3 toM = p - uMouse; float md = length(toM); if (md < uRepelR) { p += normalize(toM + 0.001) * (uRepelR - md) * 0.9; }
-          float heat = clamp(env * 1.15 + uIntro + (snoise(p * 0.4 + uTime * 0.25) * 0.5 + 0.5) * 0.18, 0.0, 1.0);
+          float heat = clamp(env * 0.7 + uIntro * 0.8 + (snoise(p * 0.4 + uTime * 0.25) * 0.5 + 0.5) * 0.15, 0.0, 1.0);
           vSpeed = heat; vRand = aRand;
           vec4 mv = modelViewMatrix * vec4(p, 1.0);
           gl_PointSize = uSize * (0.5 + aRand * 0.95) * (220.0 / -mv.z);
@@ -424,14 +424,25 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
         }`,
       fragmentShader: `precision highp float; uniform vec3 cCyan; uniform vec3 cIndigo; uniform vec3 cWhite; varying float vSpeed; varying float vRand;
         void main(){ vec2 uv = gl_PointCoord - 0.5; float d = length(uv); if (d > 0.5) discard; float a = smoothstep(0.5, 0.0, d);
-          vec3 col = mix(cIndigo, cCyan, vRand); col = mix(col, cWhite, smoothstep(0.4, 1.0, vSpeed)); gl_FragColor = vec4(col, a * 0.5); }`,
+          vec3 col = mix(cIndigo, cCyan, vRand); col = mix(col, cWhite, smoothstep(0.72, 1.0, vSpeed) * 0.55); gl_FragColor = vec4(col, a * 0.3); }`,
     });
-    const points = new THREE.Points(geo, mat); points.position.set(13, 4, 0); scene.add(points);
+    const points = new THREE.Points(geo, mat); scene.add(points);
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.72, 0.5, 0.14));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.3, 0.4, 0.24));
     composer.addPass(new OutputPass());
-    function resize() { const w = innerWidth, h = canvas.clientHeight || innerHeight; renderer.setSize(w, h, false); composer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); uniforms.uSize.value = w < 700 ? 0.6 : 0.92; }
+    function resize() {
+      const w = innerWidth, h = canvas.clientHeight || innerHeight;
+      renderer.setSize(w, h, false); composer.setSize(w, h);
+      camera.aspect = w / h; camera.updateProjectionMatrix();
+      uniforms.uSize.value = w < 700 ? 0.6 : 0.92;
+      // place the cloud relative to the visible frustum at z=0 so it sits in the
+      // open right half on desktop and the upper third on phones, never cropped
+      const halfH = Math.tan((camera.fov * Math.PI) / 360) * 66;
+      const halfW = halfH * camera.aspect;
+      if (w < 760) { points.position.set(0, halfH * 0.32, 0); points.scale.setScalar(0.6); }
+      else { points.position.set(halfW * 0.52, 1.2, 0); points.scale.setScalar(Math.min(1, halfW / 66)); }
+    }
     resize(); addEventListener("resize", resize);
 
     let tmx = 0, tmy = 0, mx = 0, my = 0, ndcX = 9, ndcY = 9;
