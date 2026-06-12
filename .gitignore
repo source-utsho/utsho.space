@@ -2,6 +2,7 @@
 PORTFOLIO/
 .extracted/
 .idea/
+.gamebuilds/
 
 # build output
 dist/

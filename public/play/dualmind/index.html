@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DualMind — play in the browser</title>
+<script src="https://cjrtnc.leaningtech.com/4.3/loader.js"></script>
+<style>
+  :root { --bg: #050810; --accent: #6b8cff; --accent2: #ff8c42; --text: #c8d4e8; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+               font-family: Georgia, "Times New Roman", serif; }
+  .wrap { display: flex; flex-direction: column; align-items: center; padding: 24px 0 48px; }
+  h1 { font-style: italic; font-weight: 600; letter-spacing: 2px; margin: 0 0 4px; }
+  .sub { color: #4a5a80; font-size: 14px; font-style: italic; margin-bottom: 18px; }
+  /* Fixed-size game stage, scaled down responsively. Keyboard-only game,
+     so CSS transform scaling does not break input mapping. */
+  /* Display is bigger than the 1280x800 JFrame so CheerpJ's window
+     decorations (title bar + borders) don't squeeze the game canvas. */
+  #stage-scaler { width: 1304px; max-width: 100vw; }
+  #game-stage { width: 1304px; height: 848px; position: relative;
+                outline: none; transform-origin: top left;
+                box-shadow: 0 0 40px rgba(107,140,255,.12); }
+  #overlay { position: absolute; inset: 0; z-index: 10; background: var(--bg);
+             display: flex; flex-direction: column; align-items: center;
+             justify-content: center; gap: 14px; cursor: pointer; }
+  #overlay .bar { width: 320px; height: 4px; background: #12182e; border-radius: 2px; overflow: hidden; }
+  #overlay .bar > div { height: 100%; width: 0%; background: var(--accent); transition: width .3s; }
+  #status { color: #4a5a80; font-size: 13px; font-family: monospace; }
+  #start-hint { display: none; color: var(--accent); font-size: 16px; font-style: italic;
+                animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  .controls { color: #2a3550; font-size: 12px; font-family: monospace; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Dual-Mind</h1>
+  <div class="sub">Same intention. Two brains. One semester.</div>
+
+  <div id="stage-scaler">
+    <div id="game-stage" tabindex="0">
+      <!-- CheerpJ display is created inside #game-stage; overlay sits on top until ready -->
+      <div id="overlay">
+        <div style="font-size:22px;font-style:italic;">Dual-Mind</div>
+        <div class="bar"><div id="barfill"></div></div>
+        <div id="status">Loading Java runtime&hellip;</div>
+        <div id="start-hint">Click to start &mdash; sound on</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">WASD / arrows &mdash; move both &nbsp;&middot;&nbsp; SPACE &mdash; confirm &nbsp;&middot;&nbsp; SHIFT &mdash; dash &nbsp;&middot;&nbsp; H &mdash; hide tips &nbsp;&middot;&nbsp; E &mdash; confirm redesign</div>
+</div>
+
+<script type="module">
+  const W = 1280, H = 800;            // JFrame content size (GameConfig)
+  const DISP_W = 1304, DISP_H = 848;  // display = frame + decoration margin
+  const stage   = document.getElementById("game-stage");
+  const overlay = document.getElementById("overlay");
+  const status  = document.getElementById("status");
+  const barfill = document.getElementById("barfill");
+  const hint    = document.getElementById("start-hint");
+
+  // ---- responsive scaling (keyboard-only game: transform scaling is safe) ----
+  function rescale() {
+    const avail = Math.max(320, document.documentElement.clientWidth || window.innerWidth || DISP_W);
+    const scale = Math.min(1, (avail - 16) / DISP_W);
+    stage.style.transform = `scale(${scale})`;
+    document.getElementById("stage-scaler").style.height = (DISP_H * scale) + "px";
+  }
+  window.addEventListener("resize", rescale);
+  rescale();
+
+  // ---- stop the browser from scrolling / changing focus on game keys ----
+  // Space + arrows scroll the page; Tab moves focus. The game uses all of them.
+  const gameKeys = new Set(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," ","Tab"]);
+  stage.addEventListener("keydown", (e) => {
+    if (gameKeys.has(e.key)) e.preventDefault();
+  });
+
+  // ---- boot CheerpJ ----
+  status.textContent = "Initializing JVM (Java 8 runtime)…";
+  barfill.style.width = "20%";
+
+  await cheerpjInit({
+    version: 8,          // game is compiled with --release 8
+    status: "none",      // we render our own progress UI
+  });
+
+  barfill.style.width = "55%";
+  status.textContent = "Runtime ready.";
+  hint.style.display = "block";
+
+  // Audio (javax.sound -> WebAudio) and keyboard focus both want a user
+  // gesture, so gate game start behind one click.
+  await new Promise((resolve) => {
+    overlay.addEventListener("click", resolve, { once: true });
+  });
+  hint.style.display = "none";
+  status.textContent = "Starting Dual-Mind…";
+  barfill.style.width = "75%";
+
+  // Display must exist before running main. Created INSIDE the stage div.
+  // Slightly larger than the JFrame so window decorations don't clamp it.
+  cheerpjCreateDisplay(DISP_W, DISP_H, stage);
+
+  // Hide our overlay as soon as CheerpJ paints the first Java window.
+  // NOTE: do not call stage.focus() here — CheerpJ focuses its own hidden
+  // input element when the Java window appears; stealing focus breaks keys.
+  const obs = new MutationObserver(() => {
+    if (stage.querySelector("canvas")) {
+      barfill.style.width = "100%";
+      setTimeout(() => { overlay.style.display = "none"; }, 400);
+      obs.disconnect();
+    }
+  });
+  obs.observe(stage, { childList: true, subtree: true });
+
+  // /app/ maps to the web root this page is served from.
+  // dualmind.jar sits next to index.html  ->  /app/dualmind.jar
+  await cheerpjRunMain("main.DualMind", "/app/dualmind.jar");
+</script>
+</body>
+</html>

@@ -1,7 +1,8 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
 import { meta, hero, about, projects, recognition, skills, beyond, education, contact } from "../data/portfolio";
-const featured = projects.filter((p) => p.featured);
+const arcade = projects.filter((p) => p.play);
+const featured = projects.filter((p) => p.featured && !p.play);
 const supporting = projects.filter((p) => !p.featured);
 const stats = [
   { n: "8", suffix: "", label: "projects shipped" },
@@ -26,7 +27,7 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
       <h1 class="split">{hero.headline}</h1>
       <p class="sub reveal">{hero.sub}</p>
       <div class="act reveal">
-        <a href="#work" class="b1 magnetic">View work</a>
+        <a href="#arcade" class="b1 magnetic">Play my work</a>
         <a href={`mailto:${meta.email}`} class="b2 magnetic">Email me</a>
       </div>
     </div>
@@ -47,13 +48,45 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
       </div>
     </section>
 
-    <!-- ============ ABOUT ============ -->
-    <section id="about" class="wrap">
-      <div class="sh reveal"><span class="idx">01</span><h2 class="split">How I got here</h2>
+    <!-- ============ ARCADE (playable work) ============ -->
+    <section id="arcade" class="wrap">
+      <div class="sh reveal"><span class="idx">01</span><h2 class="split">The arcade</h2>
         <svg class="draw sig" viewBox="0 0 420 20" preserveAspectRatio="none" aria-hidden="true"><path d="M0 10 H150 l6 -7 l5 14 l6 -14 l5 7 H280 l7 -5 l6 9 H420"/></svg></div>
-      <p class="lead reveal">{about.lead}</p>
-      <div class="prose-col stagger">
-        {about.paragraphs.map((p, i) => (<p class={`prose reveal${i === 0 ? " dropcap" : ""}`}>{p}</p>))}
+      <p class="arcade-note reveal">Two of my games run right here in your browser — one boots an entire Java VM in WebAssembly, the other a Python runtime. No installs, no demo videos. The actual builds.</p>
+      <div class="cabinets stagger">
+        {arcade.map((p) => (
+          <article class={`cab tilt reveal cab-${p.id}`}>
+            <div class="cab-screen" aria-hidden="true">
+              {p.id === "dualmind" ? (
+                <div class="dm-teaser">
+                  <div class="dm-monitor"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                  <div class="dm-split">
+                    <div class="dm-half"><span class="dm-dot dm-nt"></span><span class="dm-tag" style="color:#6b8cff">MAC</span></div>
+                    <div class="dm-half"><span class="dm-dot dm-adhd"></span><span class="dm-tag" style="color:#ff8c42">MARCUS</span></div>
+                  </div>
+                </div>
+              ) : (
+                <div class="na-teaser">
+                  <span class="na-apple a1"></span><span class="na-apple a2"></span><span class="na-apple a3"></span><span class="na-apple a4"></span><span class="na-apple a5"></span>
+                  <div class="na-quiz">∫ 2x dx = ?</div>
+                  <div class="na-catcher"></div>
+                </div>
+              )}
+              <div class="cab-scan"></div>
+            </div>
+            <div class="cab-body">
+              <div class="c-kind">{p.kind} · {p.year}</div>
+              <h3 class="cab-title">{p.title}</h3>
+              <p class="c-one">{p.oneLiner}</p>
+              <p class="cab-text">{p.body}</p>
+              <div class="cab-badges">{(p.badges ?? []).map((b) => <span>{b}</span>)}</div>
+              <div class="cab-act">
+                <a class="b1 magnetic cab-play" href={p.play} target="_blank" rel="noopener">▶ Insert coin</a>
+                <span class="cab-controls">{p.controls}</span>
+              </div>
+            </div>
+          </article>
+        ))}
       </div>
     </section>
 
@@ -92,9 +125,19 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
       </div>
     </section>
 
+    <!-- ============ ABOUT ============ -->
+    <section id="about" class="wrap">
+      <div class="sh reveal"><span class="idx">03</span><h2 class="split">How I got here</h2>
+        <svg class="draw sig" viewBox="0 0 420 20" preserveAspectRatio="none" aria-hidden="true"><path d="M0 10 H150 l6 -7 l5 14 l6 -14 l5 7 H280 l7 -5 l6 9 H420"/></svg></div>
+      <p class="lead reveal">{about.lead}</p>
+      <div class="prose-col stagger">
+        {about.paragraphs.map((p, i) => (<p class={`prose reveal${i === 0 ? " dropcap" : ""}`}>{p}</p>))}
+      </div>
+    </section>
+
     <!-- ============ RECOGNITION ============ -->
     <section id="recognition" class="wrap">
-      <div class="sh reveal"><span class="idx">03</span><h2 class="split">Recognition</h2>
+      <div class="sh reveal"><span class="idx">04</span><h2 class="split">Recognition</h2>
         <svg class="draw sig" viewBox="0 0 420 20" preserveAspectRatio="none" aria-hidden="true"><path d="M0 10 H170 l6 -7 l5 14 l6 -14 l5 7 H300 l7 -5 l6 9 H420"/></svg></div>
       <div class="ach-list stagger">
         {recognition.map((r) => (
@@ -109,7 +152,7 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
     <!-- ============ TOOLKIT + EDUCATION ============ -->
     <section id="toolkit" class="wrap two">
       <div>
-        <div class="sh reveal"><span class="idx">04</span><h2 class="split">Toolkit</h2></div>
+        <div class="sh reveal"><span class="idx">05</span><h2 class="split">Toolkit</h2></div>
         <div class="skills stagger">
           {skills.map((g) => (
             <div class="sg reveal"><h5>{g.group}</h5><div class="chips">{g.items.map((i) => <code>{i}</code>)}</div></div>
@@ -117,7 +160,7 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
         </div>
       </div>
       <div>
-        <div class="sh reveal"><span class="idx">05</span><h2 class="split">Now</h2></div>
+        <div class="sh reveal"><span class="idx">06</span><h2 class="split">Now</h2></div>
         <div class="edu reveal">
           <p class="edu-deg">{education.degree}</p>
           <p class="edu-school">{education.school} · <span class="edu-grad">{education.grad}</span></p>
@@ -130,7 +173,7 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
 
     <!-- ============ BEYOND ============ -->
     <section id="beyond" class="wrap">
-      <div class="sh reveal"><span class="idx">06</span><h2 class="split">Beyond the work</h2>
+      <div class="sh reveal"><span class="idx">07</span><h2 class="split">Beyond the work</h2>
         <svg class="draw sig" viewBox="0 0 420 20" preserveAspectRatio="none" aria-hidden="true"><path d="M0 10 H140 l6 -7 l5 14 l6 -14 l5 7 H260 l7 -5 l6 9 H420"/></svg></div>
       <div class="beyond-grid stagger">
         {beyond.map((b) => (
@@ -141,7 +184,7 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
 
     <!-- ============ CONTACT ============ -->
     <footer id="contact" class="wrap">
-      <div class="sh reveal"><span class="idx">07</span><h2 class="split">Let's talk</h2></div>
+      <div class="sh reveal"><span class="idx">08</span><h2 class="split">Let's talk</h2></div>
       <p class="c-blurb reveal">{contact.blurb}</p>
       <a class="email split magnetic" href={`mailto:${meta.email}`}>{meta.email}</a>
       <div class="socials reveal stagger">
@@ -203,6 +246,53 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
     .ro::before { content: ""; width: 16px; height: 2px; background: var(--acc); margin-bottom: 0.6rem; }
     .rv { font-family: "JetBrains Mono", monospace; font-size: clamp(1.9rem,4vw,2.6rem); font-weight: 500; color: var(--txt); line-height: 1; font-variant-numeric: tabular-nums; }
     .rl { font-family: "JetBrains Mono", monospace; font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--low); }
+
+    /* arcade */
+    .arcade-note { font-family: "Newsreader", serif; color: var(--mid); font-size: 1.08rem; line-height: 1.6; max-width: 60ch; margin: 0 0 2.4rem; }
+    .cabinets { display: grid; grid-template-columns: 1fr; gap: 1.8rem; }
+    @media (min-width: 880px) { .cabinets { grid-template-columns: 1fr 1fr; } }
+    .cab { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; transition: border-color .3s, transform .4s var(--ease-out), box-shadow .4s; will-change: transform; }
+    .cab:hover { border-color: rgba(61,225,196,0.45); box-shadow: 0 18px 60px rgba(0,0,0,0.45); }
+    .cab-screen { position: relative; height: 230px; background: #05070c; border-bottom: 1px solid var(--line); overflow: hidden; }
+    .cab-scan { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 3px); }
+    .cab-screen::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 70px rgba(0,0,0,0.6); pointer-events: none; }
+    .cab-body { padding: 1.5rem 1.6rem 1.7rem; }
+    .cab-title { font-family: "Newsreader", serif; font-weight: 500; font-size: 1.7rem; margin: 0.4rem 0 0.2rem; letter-spacing: -0.01em; }
+    .cab-text { color: var(--mid); line-height: 1.6; font-size: 0.96rem; margin: 0 0 1.1rem; }
+    .cab-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.3rem; }
+    .cab-badges span { font-family: "JetBrains Mono", monospace; font-size: 0.62rem; color: var(--acc); background: rgba(61,225,196,0.08); border: 1px solid rgba(61,225,196,0.25); border-radius: 999px; padding: 0.25rem 0.6rem; letter-spacing: 0.04em; }
+    .cab-act { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .cab-play { font-size: 0.9rem; }
+    .cab-controls { font-family: "JetBrains Mono", monospace; font-size: 0.68rem; color: var(--low); letter-spacing: 0.08em; }
+    /* dualmind teaser: live monitor + split lanes, one mind smooth, one misfiring */
+    .dm-teaser { position: absolute; inset: 0; display: flex; flex-direction: column; }
+    .dm-monitor { height: 56px; border-bottom: 1px solid #12182e; display: flex; align-items: center; justify-content: space-around; padding: 0 10%; background: #070b14; }
+    .dm-monitor i { width: 26px; height: 26px; border-radius: 50%; }
+    .dm-monitor i:nth-child(-n+3) { background: radial-gradient(circle, #6b8cff 0%, transparent 70%); animation: dmPulse 2.6s ease-in-out infinite; }
+    .dm-monitor i:nth-child(n+4) { background: radial-gradient(circle, #ff8c42 0%, transparent 70%); animation: dmPulse 1.05s ease-in-out infinite; }
+    .dm-monitor i:nth-child(2) { animation-delay: .5s; } .dm-monitor i:nth-child(3) { animation-delay: 1.1s; }
+    .dm-monitor i:nth-child(5) { animation-delay: .2s; } .dm-monitor i:nth-child(6) { animation-delay: .6s; }
+    @keyframes dmPulse { 0%,100% { transform: scale(0.5); opacity: 0.3; } 50% { transform: scale(1.2); opacity: 1; } }
+    .dm-split { flex: 1; display: flex; position: relative; }
+    .dm-split::after { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: #1e2240; }
+    .dm-half { flex: 1; position: relative; }
+    .dm-tag { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-family: "JetBrains Mono", monospace; font-size: 0.58rem; letter-spacing: 0.18em; opacity: 0.7; }
+    .dm-dot { position: absolute; width: 10px; height: 10px; border-radius: 2px; top: 50%; left: 50%; margin: -5px 0 0 -5px; }
+    .dm-nt { background: #6b8cff; box-shadow: 0 0 14px #6b8cff; animation: dmOrbit 5s linear infinite; }
+    .dm-adhd { background: #ff8c42; box-shadow: 0 0 14px #ff8c42; animation: dmErratic 5s steps(1, end) infinite; }
+    @keyframes dmOrbit { 0% { transform: translate(-32px,-24px); } 25% { transform: translate(32px,-24px); } 50% { transform: translate(32px,24px); } 75% { transform: translate(-32px,24px); } 100% { transform: translate(-32px,-24px); } }
+    @keyframes dmErratic { 0% { transform: translate(-32px,-24px); } 11% { transform: translate(26px,-8px); } 24% { transform: translate(26px,-8px); } 33% { transform: translate(-14px,26px); } 45% { transform: translate(-36px,4px); } 58% { transform: translate(-36px,4px); } 67% { transform: translate(18px,20px); } 80% { transform: translate(8px,-28px); } 91% { transform: translate(-20px,-2px); } 100% { transform: translate(-32px,-24px); } }
+    /* newton teaser: falling apples, a quiz flash, a pacing catcher */
+    .na-teaser { position: absolute; inset: 0; background: linear-gradient(180deg, #0a1322 0%, #0b1a13 100%); }
+    .na-apple { position: absolute; top: -14px; width: 11px; height: 11px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff6b5e, #c62f2f); animation: naFall linear infinite; }
+    .na-apple::after { content: ""; position: absolute; top: -3px; left: 5px; width: 2px; height: 4px; background: #6a4; }
+    .a1 { left: 12%; animation-duration: 2.3s; } .a2 { left: 32%; animation-duration: 3.1s; animation-delay: .7s; } .a3 { left: 53%; animation-duration: 2.7s; animation-delay: 1.4s; } .a4 { left: 71%; animation-duration: 3.4s; animation-delay: .3s; } .a5 { left: 87%; animation-duration: 2.5s; animation-delay: 1.9s; }
+    @keyframes naFall { to { transform: translateY(250px); } }
+    .na-quiz { position: absolute; left: 50%; top: 36%; transform: translate(-50%,-50%); font-family: "JetBrains Mono", monospace; font-size: 0.88rem; color: #ffd34d; opacity: 0; animation: naQuiz 6s ease-in-out infinite; text-shadow: 0 0 16px rgba(255,211,77,0.45); }
+    @keyframes naQuiz { 0%,55%,100% { opacity: 0; } 63%,88% { opacity: 1; } }
+    .na-catcher { position: absolute; bottom: 10px; left: 6%; width: 34px; height: 8px; border-radius: 3px; background: #cfd6e4; animation: naMove 4.2s ease-in-out infinite alternate; }
+    @keyframes naMove { from { left: 6%; } to { left: 84%; } }
+    @media (prefers-reduced-motion: reduce) { .dm-dot, .dm-monitor i, .na-apple, .na-quiz, .na-catcher { animation: none; } }
 
     /* about */
     .lead { font-family: "Newsreader", serif; font-style: italic; font-size: clamp(1.3rem,2.6vw,1.9rem); line-height: 1.4; color: var(--txt); max-width: 30ch; margin: 0 0 2rem; }
@@ -338,16 +428,204 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
     // ---- particle forms ----
     const N = reduce ? 24000 : (innerWidth < 760 ? 60000 : 120000);
     function fibDir(i: number, n: number) { const inc = Math.PI * (3 - Math.sqrt(5)), y = 1 - 2 * ((i + 0.5) / n), r = Math.sqrt(Math.max(0, 1 - y * y)), phi = i * inc; return [Math.cos(phi) * r, y, Math.sin(phi) * r]; }
+    // ------------------------------------------------------------------
+    // Procedural human brain — anatomical point cloud (lateral view readable)
+    // axes: +X anterior (front) · +Y superior (top) · +Z right hemisphere
+    // returns positions with `.aDepth` (0 gyral crest .. 1 sulcus/fissure)
+    // ------------------------------------------------------------------
     function buildBrain(): Float32Array {
       const out = new Float32Array(N * 3);
-      for (let i = 0; i < N; i++) {
-        let [nx, ny, nz] = fibDir(i, N);
-        const folds = 0.5 * Math.sin(nx * 13) * Math.cos(nz * 13) + 0.32 * Math.sin(ny * 17 + nx * 6);
-        let R = 14 * (1 + 0.055 * folds); if (Math.random() < 0.18) R *= 0.5 + 0.45 * Math.random();
-        let px = nx * R * 1.28, py = ny * R * 0.9, pz = nz * R * 1.06;
-        if (py < -6) py = -6 + (py + 6) * 0.5; if (Math.abs(px) < 2.4) { px *= 0.55; pz -= 1.2; }
-        out[i * 3] = px; out[i * 3 + 1] = py; out[i * 3 + 2] = pz;
-      } return out;
+      const depth = new Float32Array(N); // aDepth per point
+
+      // seeded PRNG (mulberry32) — deterministic brain every load
+      let _s = (0x9e3779b9 ^ 1337) >>> 0;
+      function rng(): number {
+        _s |= 0; _s = (_s + 0x6D2B79F5) | 0;
+        let t = Math.imul(_s ^ (_s >>> 15), 1 | _s);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      }
+      // integer-hash trilinear value noise (allocation-free)
+      function h3(i: number, j: number, k: number): number {
+        let n = (Math.imul(i, 374761393) + Math.imul(j, 668265263) + Math.imul(k, 1274126177)) | 0;
+        n = (n ^ (n >>> 13)) | 0; n = Math.imul(n, 1274126177); n = (n ^ (n >>> 16)) >>> 0;
+        return n / 4294967296;
+      }
+      const fade = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
+      function vn(x: number, y: number, z: number): number {
+        const X = Math.floor(x), Y = Math.floor(y), Z = Math.floor(z);
+        const u = fade(x - X), v = fade(y - Y), w = fade(z - Z);
+        const c000 = h3(X, Y, Z), c100 = h3(X + 1, Y, Z);
+        const c010 = h3(X, Y + 1, Z), c110 = h3(X + 1, Y + 1, Z);
+        const c001 = h3(X, Y, Z + 1), c101 = h3(X + 1, Y, Z + 1);
+        const c011 = h3(X, Y + 1, Z + 1), c111 = h3(X + 1, Y + 1, Z + 1);
+        const x00 = c000 + (c100 - c000) * u, x10 = c010 + (c110 - c010) * u;
+        const x01 = c001 + (c101 - c001) * u, x11 = c011 + (c111 - c011) * u;
+        const y0 = x00 + (x10 - x00) * v, y1 = x01 + (x11 - x01) * v;
+        return y0 + (y1 - y0) * w;
+      }
+      // iq approximate ellipsoid SDF + cubic smooth-min union
+      function sdEllip(px: number, py: number, pz: number, cx: number, cy: number, cz: number, rx: number, ry: number, rz: number): number {
+        const x = px - cx, y = py - cy, z = pz - cz;
+        const ex = x / rx, ey = y / ry, ez = z / rz;
+        const k0 = Math.sqrt(ex * ex + ey * ey + ez * ez);
+        if (k0 < 1e-6) return -Math.min(rx, ry, rz);
+        const fx = ex / rx, fy = ey / ry, fz = ez / rz;
+        const k1 = Math.sqrt(fx * fx + fy * fy + fz * fz);
+        return k0 * (k0 - 1.0) / k1;
+      }
+      const smin = (a: number, b: number, k: number) => {
+        const h = Math.max(k - Math.abs(a - b), 0) / k;
+        return Math.min(a, b) - h * h * h * k * (1 / 6);
+      };
+
+      // analytic lobes: 0,1 R/L hemispheres · 2 occipital pole · 3,4 R/L temporal
+      const CPX = [ 0.0,  0.0, -11.7,  4.6,  4.6];
+      const CPY = [ 1.0,  1.0,   1.2, -4.9, -4.9];
+      const CPZ = [ 5.4, -5.4,   0.0,  8.9, -8.9]; // hemi Z offset = longitudinal fissure
+      const CRX = [14.5, 14.5,   4.4,  7.2,  7.2];
+      const CRY = [ 8.4,  8.4,   4.7,  3.7,  3.7];
+      const CRZ = [ 7.2,  7.2,   7.2,  4.3,  4.3];
+      const NCP = 5, CK = 1.6;
+      let _min1 = 0, _min2 = 0, _imin = 0;
+      function cerebrumField(px: number, py: number, pz: number): number {
+        _min1 = 1e9; _min2 = 1e9; _imin = 0;
+        let f = 1e9;
+        for (let i = 0; i < NCP; i++) {
+          const d = sdEllip(px, py, pz, CPX[i], CPY[i], CPZ[i], CRX[i], CRY[i], CRZ[i]);
+          if (d < _min1) { _min2 = _min1; _min1 = d; _imin = i; }
+          else if (d < _min2) { _min2 = d; }
+          f = (f >= 1e8) ? d : smin(f, d, CK);
+        }
+        return f;
+      }
+      // cerebellum (postero-inferior) + brainstem capsule
+      const CBX = -10.8, CBY = -6.2, CBZ = 0.0, CBRX = 5.0, CBRY = 3.9, CBRZ = 7.4;
+      const BSA = [-6.2, -5.2, 0.4], BSB = [-3.4, -11.8, 0.0], BSR0 = 1.95, BSR1 = 1.05;
+
+      // ridged + domain-warped noise → serpentine gyri (~28-30 ridges/hemisphere)
+      function cortexFold(px: number, py: number, pz: number): number {
+        const wx = (vn(px * 0.45 + 11.3, py * 0.45 + 5.7, pz * 0.45 + 2.1) - 0.5);
+        const wy = (vn(px * 0.45 + 3.2, py * 0.45 + 9.1, pz * 0.45 + 7.4) - 0.5);
+        const wz = (vn(px * 0.45 + 6.8, py * 0.45 + 1.5, pz * 0.45 + 4.9) - 0.5);
+        const X = px + wx, Y = py + wy, Z = pz + wz;
+        const r1 = 1.0 - Math.abs(2.0 * vn(X, Y, Z) - 1.0);
+        const r2 = 1.0 - Math.abs(2.0 * vn(X * 2.1 + 20, Y * 2.1, Z * 2.1) - 1.0);
+        return r1 * 0.72 + r2 * 0.28; // 1 crest .. 0 floor
+      }
+
+      let idx = 0;
+      const TAU = Math.PI * 2;
+      let _dx = 0, _dy = 0, _dz = 0;
+      function randDir(): void {
+        const u = rng() * 2 - 1, phi = rng() * TAU, s = Math.sqrt(Math.max(0, 1 - u * u));
+        _dx = s * Math.cos(phi); _dy = u; _dz = s * Math.sin(phi);
+      }
+
+      // cerebrum shell: surface-sample lobes, reject buried points — this
+      // auto-carves the longitudinal fissure; seams become darkened walls
+      function buildCerebrum(count: number): void {
+        const w: number[] = []; let acc = 0;
+        for (let i = 0; i < NCP; i++) { acc += CRX[i]*CRY[i] + CRY[i]*CRZ[i] + CRX[i]*CRZ[i]; w.push(acc); }
+        const total = acc;
+        let written = 0, attempts = 0; const maxA = count * 8;
+        while (written < count && attempts < maxA) {
+          attempts++;
+          const t = rng() * total; let li = 0; while (li < NCP - 1 && t > w[li]) li++;
+          randDir();
+          let px = CPX[li] + _dx * CRX[li], py = CPY[li] + _dy * CRY[li], pz = CPZ[li] + _dz * CRZ[li];
+          const f = cerebrumField(px, py, pz);
+          if (f < -0.45) continue; // buried inside another lobe
+          let nx = (px - CPX[_imin]) / (CRX[_imin] * CRX[_imin]);
+          let ny = (py - CPY[_imin]) / (CRY[_imin] * CRY[_imin]);
+          let nz = (pz - CPZ[_imin]) / (CRZ[_imin] * CRZ[_imin]);
+          const nl = Math.sqrt(nx*nx + ny*ny + nz*nz) || 1; nx /= nl; ny /= nl; nz /= nl;
+          px -= nx * f * 0.8; py -= ny * f * 0.8; pz -= nz * f * 0.8;
+          const seam = Math.max(0, 1 - (_min2 - _min1) / 1.5) * Math.max(0, 1 - Math.abs(_min1) / 1.3);
+          const fold = cortexFold(px, py, pz);
+          let disp = (fold - 0.5) * 1.9;
+          let aD = 1.0 - fold;
+          disp -= seam * 1.15; // deepen fissures
+          aD = Math.max(aD, seam * 0.97);
+          px += nx * disp; py += ny * disp; pz += nz * disp;
+          if (py < -6.2) py = -6.2 + (py + 6.2) * 0.45; // flatten inferior surface
+          out[idx*3] = px; out[idx*3+1] = py; out[idx*3+2] = pz;
+          depth[idx] = aD < 0 ? 0 : (aD > 1 ? 1 : aD);
+          idx++; written++;
+        }
+      }
+      // cerebellum: fine parallel horizontal folia + vermis midline groove
+      function buildCerebellum(count: number): void {
+        let written = 0, attempts = 0; const maxA = count * 8;
+        while (written < count && attempts < maxA) {
+          attempts++;
+          randDir();
+          let px = CBX + _dx * CBRX, py = CBY + _dy * CBRY, pz = CBZ + _dz * CBRZ;
+          if (cerebrumField(px, py, pz) < -0.25) continue;
+          let nx = (px - CBX)/(CBRX*CBRX), ny = (py - CBY)/(CBRY*CBRY), nz = (pz - CBZ)/(CBRZ*CBRZ);
+          const nl = Math.sqrt(nx*nx + ny*ny + nz*nz) || 1; nx /= nl; ny /= nl; nz /= nl;
+          let phase = (py - CBY) * 5.5 + (px - CBX) * 1.2;
+          phase += (vn(px*0.6 + 50, py*0.6, pz*0.6) - 0.5) * 0.6;
+          const r = 1.0 - Math.abs(Math.sin(phase));
+          px += nx * (r - 0.5) * 0.55; py += ny * (r - 0.5) * 0.55; pz += nz * (r - 0.5) * 0.55;
+          let aD = 0.45 + (1.0 - r) * 0.5;
+          if (Math.abs(pz) < 0.9) aD = Math.max(aD, 0.8);
+          out[idx*3] = px; out[idx*3+1] = py; out[idx*3+2] = pz;
+          depth[idx] = aD > 1 ? 1 : aD;
+          idx++; written++;
+        }
+      }
+      // brainstem: tapering capsule with pons bulge
+      function buildBrainstem(count: number): void {
+        const ax = BSB[0]-BSA[0], ay = BSB[1]-BSA[1], az = BSB[2]-BSA[2];
+        const alen = Math.sqrt(ax*ax + ay*ay + az*az), ux = ax/alen, uy = ay/alen, uz = az/alen;
+        let e1x = -uy, e1y = ux, e1z = 0; const e1l = Math.sqrt(e1x*e1x + e1y*e1y) || 1; e1x/=e1l; e1y/=e1l;
+        const e2x = uy*e1z - uz*e1y, e2y = uz*e1x - ux*e1z, e2z = ux*e1y - uy*e1x;
+        let written = 0, attempts = 0; const maxA = count * 8;
+        while (written < count && attempts < maxA) {
+          attempts++;
+          const t = rng();
+          let rad = BSR0 + (BSR1 - BSR0) * t;
+          rad *= 1.0 + 0.45 * Math.exp(-((t - 0.3)/0.18) * ((t - 0.3)/0.18));
+          const a = rng() * TAU, ca = Math.cos(a), sa = Math.sin(a);
+          const bx = BSA[0]+ax*t, by = BSA[1]+ay*t, bz = BSA[2]+az*t;
+          const nx = e1x*ca + e2x*sa, ny = e1y*ca + e2y*sa, nz = e1z*ca + e2z*sa;
+          let px = bx + nx*rad, py = by + ny*rad, pz = bz + nz*rad;
+          if (cerebrumField(px, py, pz) < -0.2) continue;
+          const wob = (vn(px*0.7, py*0.7, pz*0.7) - 0.5) * 0.25;
+          px += nx*wob; py += ny*wob; pz += nz*wob;
+          out[idx*3] = px; out[idx*3+1] = py; out[idx*3+2] = pz;
+          depth[idx] = 0.4;
+          idx++; written++;
+        }
+      }
+      // interior volume hint (~8%)
+      function buildInterior(count: number): void {
+        let written = 0, attempts = 0; const maxA = count * 8;
+        while (written < count && attempts < maxA) {
+          attempts++;
+          const li = (rng() * NCP) | 0; randDir();
+          const frac = Math.cbrt(rng()) * 0.84;
+          out[idx*3]   = CPX[li] + _dx * CRX[li] * frac;
+          out[idx*3+1] = CPY[li] + _dy * CRY[li] * frac;
+          out[idx*3+2] = CPZ[li] + _dz * CRZ[li] * frac;
+          depth[idx] = 0.72 + rng() * 0.28;
+          idx++; written++;
+        }
+      }
+
+      const nInterior   = Math.round(N * 0.08);
+      const nBrainstem  = Math.round(N * 0.03);
+      const nCerebellum = Math.round(N * 0.125);
+      const nCerebrum   = N - nInterior - nBrainstem - nCerebellum;
+      buildCerebrum(nCerebrum);
+      buildCerebellum(nCerebellum);
+      buildBrainstem(nBrainstem);
+      buildInterior(nInterior);
+      while (idx < N) buildCerebrum(N - idx);
+
+      (out as any).aDepth = depth;
+      return out;
     }
     function buildLattice(): Float32Array {
       const out = new Float32Array(N * 3); const NODES = 84, nodes: number[][] = [];
@@ -374,6 +652,10 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
     const shapes = [buildBrain(), buildLattice(), buildChip()];
     const labels = ["MIND", "NETWORK", "SILICON"];
     const rand = new Float32Array(N); for (let i = 0; i < N; i++) rand[i] = Math.random();
+    // sulcus-depth attribute: only the brain darkens its folds; it morphs like positions
+    const brainDepth = (shapes[0] as any).aDepth as Float32Array;
+    const zeroDepth = new Float32Array(N);
+    const depths = [brainDepth, zeroDepth, zeroDepth];
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -385,6 +667,8 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
     geo.setAttribute("aFrom", new THREE.BufferAttribute(shapes[0].slice(), 3));
     geo.setAttribute("aTo", new THREE.BufferAttribute(shapes[1].slice(), 3));
     geo.setAttribute("aRand", new THREE.BufferAttribute(rand, 1));
+    geo.setAttribute("aDepthFrom", new THREE.BufferAttribute(depths[0].slice(), 1));
+    geo.setAttribute("aDepthTo", new THREE.BufferAttribute(depths[1].slice(), 1));
     const uniforms = {
       uMix: { value: 0 }, uTime: { value: 0 }, uSize: { value: 0.92 }, uIntro: { value: 1.0 },
       uMouse: { value: new THREE.Vector3(9999, 9999, 9999) }, uRepelR: { value: 6.5 },
@@ -408,8 +692,9 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
       uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
       vertexShader: NOISE + `
         attribute vec3 aFrom; attribute vec3 aTo; attribute float aRand;
+        attribute float aDepthFrom; attribute float aDepthTo;
         uniform float uMix; uniform float uTime; uniform float uSize; uniform float uIntro; uniform vec3 uMouse; uniform float uRepelR;
-        varying float vSpeed; varying float vRand;
+        varying float vSpeed; varying float vRand; varying float vDepth;
         void main(){
           vec3 p = mix(aFrom, aTo, uMix);
           float env = sin(uMix * 3.14159);
@@ -418,13 +703,17 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
           vec3 toM = p - uMouse; float md = length(toM); if (md < uRepelR) { p += normalize(toM + 0.001) * (uRepelR - md) * 0.9; }
           float heat = clamp(env * 0.7 + uIntro * 0.8 + (snoise(p * 0.4 + uTime * 0.25) * 0.5 + 0.5) * 0.15, 0.0, 1.0);
           vSpeed = heat; vRand = aRand;
+          vDepth = mix(aDepthFrom, aDepthTo, uMix);
           vec4 mv = modelViewMatrix * vec4(p, 1.0);
           gl_PointSize = uSize * (0.5 + aRand * 0.95) * (220.0 / -mv.z);
           gl_Position = projectionMatrix * mv;
         }`,
-      fragmentShader: `precision highp float; uniform vec3 cCyan; uniform vec3 cIndigo; uniform vec3 cWhite; varying float vSpeed; varying float vRand;
+      fragmentShader: `precision highp float; uniform vec3 cCyan; uniform vec3 cIndigo; uniform vec3 cWhite; varying float vSpeed; varying float vRand; varying float vDepth;
         void main(){ vec2 uv = gl_PointCoord - 0.5; float d = length(uv); if (d > 0.5) discard; float a = smoothstep(0.5, 0.0, d);
-          vec3 col = mix(cIndigo, cCyan, vRand); col = mix(col, cWhite, smoothstep(0.72, 1.0, vSpeed) * 0.55); gl_FragColor = vec4(col, a * 0.3); }`,
+          vec3 col = mix(cIndigo, cCyan, vRand); col = mix(col, cWhite, smoothstep(0.72, 1.0, vSpeed) * 0.55);
+          col = mix(col, cIndigo * 0.45, vDepth * 0.7);            // sulci sink into deep indigo
+          col *= mix(1.0, 0.40, vDepth);                           // fissure self-shadowing
+          gl_FragColor = vec4(col, a * 0.3 * (1.0 - vDepth * 0.25)); }`,
     });
     const points = new THREE.Points(geo, mat); scene.add(points);
     const composer = new EffectComposer(renderer);
@@ -452,7 +741,14 @@ const pad = (i: number) => String(i + 1).padStart(2, "0");
     const HOLD = 3.0, MORPH = 2.0;
     const ease = (k: number) => k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
     const clock = new THREE.Clock(); formLabel.textContent = labels[0];
-    function settle() { (geo.getAttribute("aFrom") as THREE.BufferAttribute).array.set(shapes[curTo]); geo.getAttribute("aFrom").needsUpdate = true; curTo = (curTo + 1) % order; (geo.getAttribute("aTo") as THREE.BufferAttribute).array.set(shapes[curTo]); geo.getAttribute("aTo").needsUpdate = true; uniforms.uMix.value = 0; }
+    function settle() {
+      (geo.getAttribute("aFrom") as THREE.BufferAttribute).array.set(shapes[curTo]); geo.getAttribute("aFrom").needsUpdate = true;
+      (geo.getAttribute("aDepthFrom") as THREE.BufferAttribute).array.set(depths[curTo]); geo.getAttribute("aDepthFrom").needsUpdate = true;
+      curTo = (curTo + 1) % order;
+      (geo.getAttribute("aTo") as THREE.BufferAttribute).array.set(shapes[curTo]); geo.getAttribute("aTo").needsUpdate = true;
+      (geo.getAttribute("aDepthTo") as THREE.BufferAttribute).array.set(depths[curTo]); geo.getAttribute("aDepthTo").needsUpdate = true;
+      uniforms.uMix.value = 0;
+    }
     let heroVisible = true;
     new IntersectionObserver((es) => { heroVisible = es[0].isIntersecting; }).observe(canvas);
     function frame() {
