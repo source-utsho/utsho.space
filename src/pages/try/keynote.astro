@@ -1,0 +1,167 @@
+---
+// DIRECTION TEST — "THE LAUNCH" / keynote language.
+// Jobs simplicity x Nolan cinema x Musk mission x Zuckerberg scale.
+// Deep black, monumental type, slow cinematic motion, his work revealed
+// like products. Standalone prototype; live site untouched.
+import { meta } from "../../data/portfolio";
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UTSHO — direction test</title>
+<meta name="robots" content="noindex" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth;background:#000}
+  body{background:#000;color:#fff;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .stage{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 8vw;overflow:hidden}
+  #stars{position:absolute;inset:0;z-index:0}
+  #brain{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity 2s ease}
+  #brain.lit{opacity:1}
+  .horizon{position:absolute;left:50%;bottom:-58vh;transform:translateX(-50%);width:160vw;height:100vh;z-index:0;
+    background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(255,176,120,.20),rgba(255,140,90,.07) 38%,transparent 62%);pointer-events:none}
+  .horizon::after{content:"";position:absolute;left:50%;top:0;transform:translateX(-50%);width:150vw;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,200,160,.55),transparent)}
+  .scrim{position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(90deg,rgba(0,0,0,.86) 0%,rgba(0,0,0,.5) 34%,rgba(0,0,0,0) 64%)}
+  .vignette{position:absolute;inset:0;z-index:2;pointer-events:none;box-shadow:inset 0 0 30vw rgba(0,0,0,.9)}
+  .grain{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  .hud{position:relative;z-index:3;max-width:1100px}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:2.2rem}
+  h1{font-weight:700;font-size:clamp(2.6rem,7.4vw,6.6rem);line-height:1.0;letter-spacing:-.035em;max-width:17ch}
+  .sub{font-weight:300;font-size:clamp(1.05rem,2.3vw,1.7rem);line-height:1.5;color:rgba(255,255,255,.72);max-width:40ch;margin-top:1.8rem}
+  .mission{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,176,120,.85);margin-top:2.6rem;display:flex;align-items:center;gap:.7rem}
+  .mission::before{content:"";width:26px;height:1px;background:rgba(255,176,120,.7)}
+  .cue{position:absolute;left:50%;bottom:2rem;transform:translateX(-50%);z-index:3;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;color:rgba(255,255,255,.4);animation:cue 2.4s ease-in-out infinite}
+  @keyframes cue{0%,100%{opacity:.3;transform:translate(-50%,0)}50%{opacity:.9;transform:translate(-50%,6px)}}
+
+  .rise{opacity:0;transform:translateY(30px);filter:blur(10px);animation:rise 1.5s cubic-bezier(.16,.84,.3,1) forwards}
+  .d1{animation-delay:.3s}.d2{animation-delay:.7s}.d3{animation-delay:1.25s}.d4{animation-delay:1.8s}
+  @keyframes rise{to{opacity:1;transform:none;filter:blur(0)}}
+
+  .reveal{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 8vw;border-top:1px solid rgba(255,255,255,.06)}
+  .r-num{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.3em;color:rgba(255,255,255,.4);text-transform:uppercase}
+  .r-name{font-weight:800;font-size:clamp(3rem,11vw,9rem);letter-spacing:-.04em;line-height:.95;margin:1rem 0}
+  .r-sub{font-weight:300;font-size:clamp(1.1rem,2.4vw,1.8rem);color:rgba(255,255,255,.72);max-width:34ch}
+  .r-act{margin-top:2.4rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+  .play{font-family:'Inter';font-weight:500;font-size:15px;color:#000;background:#fff;border:none;border-radius:100px;padding:1rem 1.8rem;text-decoration:none;transition:transform .2s,background .2s}
+  .play:hover{transform:scale(1.04)}
+  .ghost{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;color:rgba(255,255,255,.6);text-decoration:none}
+  .ghost:hover{color:#fff}
+  .ir{opacity:0;transform:translateY(40px);transition:opacity 1.2s ease,transform 1.2s cubic-bezier(.16,.84,.3,1)}
+  .ir.in{opacity:1;transform:none}
+
+  .cmpbar{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);z-index:50;display:flex;gap:.5rem;align-items:center;background:rgba(255,255,255,.06);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);border-radius:100px;padding:.4rem .5rem .4rem 1.1rem;font-family:'IBM Plex Mono',monospace;font-size:10.5px}
+  .cmpbar b{color:rgba(255,176,120,.95);letter-spacing:.12em}
+  .cmpbar a{color:rgba(255,255,255,.75);text-decoration:none;border:1px solid rgba(255,255,255,.14);border-radius:100px;padding:.35rem .8rem}
+  .cmpbar a:hover{border-color:#fff;color:#fff}
+  @media(prefers-reduced-motion:reduce){.rise,.ir{opacity:1;transform:none;filter:none;animation:none}.cue{animation:none}}
+</style>
+</head>
+<body>
+  <!-- HERO -->
+  <section class="stage">
+    <canvas id="stars"></canvas>
+    <canvas id="brain"></canvas>
+    <div class="horizon"></div>
+    <div class="scrim"></div>
+    <div class="vignette"></div>
+    <div class="grain"></div>
+    <div class="hud">
+      <div class="label rise d1">{meta.fullName} — Computer Engineering · Rose-Hulman ’28</div>
+      <h1 class="rise d2">I build for how people actually think.</h1>
+      <p class="sub rise d3">A computer engineer who taught himself to code in ink, with no computer. Now I make machines you can play — and I'm aiming them at Mars.</p>
+      <div class="mission rise d4">EST. 2014 · THAKURGAON · A LIBRARY BOOK, A PEN, NO COMPUTER · DESTINATION: MARS</div>
+    </div>
+    <div class="cue">SCROLL</div>
+  </section>
+
+  <!-- REVEAL 01 — work revealed like a product -->
+  <section class="reveal">
+    <div class="ir">
+      <div class="r-num">01 — PLAYABLE, RIGHT NOW</div>
+      <div class="r-name">DualMind</div>
+      <p class="r-sub">One keyboard. Two brains. A full Java virtual machine, booting in your browser. No install. No video. The real thing.</p>
+      <div class="r-act">
+        <a class="play" href="/play/dualmind/" target="_blank" rel="noopener">▶ Play it now</a>
+        <a class="ghost" href="/" >← back to the live site</a>
+      </div>
+    </div>
+  </section>
+
+  <nav class="cmpbar">
+    <b>DIRECTION TEST</b>
+    <a href="/try/run/">RUN</a>
+    <a href="/try/ink/">INK</a>
+  </nav>
+
+  <script>
+    import { initBrain } from "../../scripts/brain";
+
+    const reduceM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const brainCanvas = document.getElementById("brain");
+    if (brainCanvas) {
+      try {
+        initBrain({
+          canvas: brainCanvas,
+          reduceMotion: reduceM,
+          transparent: true,      // float the glowing cloud over stars + horizon
+          scan: false,            // no clinical slice — one uniformly lit mind
+          colors: { base: 0x4a4038, hi: 0xffe9cf, accent: 0xffb454 }, // warm, luminous
+          bloom: 0.55,            // cinematic glow (instrument used 0.15)
+          exposure: 1.12,
+          rotateSpeed: 0.1,       // slow, weighted turntable
+        });
+        requestAnimationFrame(() => brainCanvas.classList.add("lit"));
+        setTimeout(() => brainCanvas.classList.add("lit"), 120);
+      } catch (err) { console.warn("brain failed", err); }
+    }
+
+    const c = document.getElementById("stars");
+    const ctx = c.getContext("2d");
+    let w, h, stars = [];
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function size() {
+      w = c.width = innerWidth * devicePixelRatio;
+      h = c.height = c.parentElement.offsetHeight * devicePixelRatio;
+      c.style.width = innerWidth + "px"; c.style.height = c.parentElement.offsetHeight + "px";
+      const n = Math.min(260, Math.floor((innerWidth * 0.18)));
+      stars = Array.from({ length: n }, () => ({
+        x: Math.random() * w, y: Math.random() * h,
+        r: (Math.random() * 1.1 + 0.2) * devicePixelRatio,
+        a: Math.random() * 0.6 + 0.1,
+        tw: Math.random() * 0.02 + 0.003,
+        vy: (Math.random() * 0.12 + 0.02) * devicePixelRatio,
+        ph: Math.random() * 6.28,
+      }));
+    }
+    size(); addEventListener("resize", size);
+    let t = 0;
+    function frame() {
+      t += 1; ctx.clearRect(0, 0, w, h);
+      for (const s of stars) {
+        const tw = 0.5 + 0.5 * Math.sin(t * s.tw + s.ph);
+        ctx.globalAlpha = s.a * tw;
+        ctx.fillStyle = "#fff";
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.2832); ctx.fill();
+        if (!reduce) { s.y += s.vy; if (s.y > h) { s.y = 0; s.x = Math.random() * w; } }
+      }
+      ctx.globalAlpha = 1;
+      if (!reduce) requestAnimationFrame(frame);
+    }
+    frame();
+
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => { if (e.isIntersecting) e.target.classList.add("in"); });
+    }, { threshold: 0.3 });
+    document.querySelectorAll(".ir").forEach((el) => io.observe(el));
+  </script>
+</body>
+</html>

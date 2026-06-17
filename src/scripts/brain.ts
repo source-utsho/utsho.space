@@ -38,13 +38,39 @@ export interface InitBrainOpts {
   /**
    * A layer holding 6 children with [data-caliper="..."] keys (see ANCHORS).
    * Each frame we write --cx / --cy (px, viewport-relative to the canvas) so
-   * the page can draw hairline leader lines to engraved labels.
+   * the page can draw hairline leader lines to engraved labels. Optional —
+   * omit it (cinematic mode) and no calipers are projected.
    */
-  caliperLayer: HTMLElement;
+  caliperLayer?: HTMLElement | null;
   /** prefers-reduced-motion: render ONE posed frame, no turntable, no loop. */
   reduceMotion: boolean;
-  /** Hero scroll progress 0..1 — drives the scan plane each frame. */
-  getScrollT: () => number;
+  /** Hero scroll progress 0..1 — drives the scan plane each frame. Optional. */
+  getScrollT?: () => number;
+  /**
+   * CINEMATIC THEME OVERRIDES (all optional; omit for the cold instrument look).
+   * base/hi are the point colors (sulci sink via brightness off `base`, crests
+   * lift toward `hi`); accent only shows when the scan slice is on.
+   */
+  colors?: { base?: number; hi?: number; accent?: number };
+  /** UnrealBloom strength. Instrument default 0.15; cinematic wants ~0.5–0.7. */
+  bloom?: number;
+  /** ACES exposure. Default 1.0. */
+  exposure?: number;
+  /** Scene background color. Default 0x0c0d0f. Cinematic = 0x000000. */
+  bg?: number;
+  /** Turntable speed (rad/s). Default 0.12. */
+  rotateSpeed?: number;
+  /**
+   * fMRI scan-slice. Default true (instrument). Set false for a uniformly lit
+   * cinematic specimen — the plane parks off-brain so nothing dims or ignites.
+   */
+  scan?: boolean;
+  /**
+   * Transparent canvas: render only the glowing points (no opaque background),
+   * so the brain composites over whatever the page paints behind it (stars,
+   * horizon glow). Default false (opaque scene `bg`).
+   */
+  transparent?: boolean;
 }
 
 export interface BrainHandle {
@@ -82,7 +108,10 @@ const ANCHORS: { key: string; pos: [number, number, number] }[] = [
 ];
 
 export function initBrain(opts: InitBrainOpts): BrainHandle {
-  const { canvas, caliperLayer, reduceMotion, getScrollT } = opts;
+  const { canvas, caliperLayer, reduceMotion } = opts;
+  const getScrollT: () => number = opts.getScrollT ?? (() => 0.5);
+  const scanOn = opts.scan !== false;
+  const rotateSpeed = opts.rotateSpeed ?? 0.12;
 
   // ----- point budget: mobile/tiny canvas gets a lighter cloud -------------
   const small = innerWidth < 760 || canvas.clientWidth < 520;
@@ -297,13 +326,16 @@ export function initBrain(opts: InitBrainOpts): BrainHandle {
   for (let i = 0; i < N; i++) aRand[i] = Math.random();
 
   // ----- renderer / scene / camera (one WebGL context) ---------------------
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
+  const transparent = opts.transparent === true;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: transparent, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.0;
+  renderer.toneMappingExposure = opts.exposure ?? 1.0;
+  if (transparent) renderer.setClearColor(0x000000, 0);
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0c0d0f); // --ground (warm off-black)
+  // transparent: no scene fill, so the glowing points composite over the page.
+  scene.background = transparent ? null : new THREE.Color(opts.bg ?? 0x0c0d0f);
 
   const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
   camera.position.set(0, 0, 66);
@@ -316,9 +348,9 @@ export function initBrain(opts: InitBrainOpts): BrainHandle {
 
   // ----- design tokens as THREE colors -------------------------------------
   // The specimen is GRAPHITE; the only glow is --amber phosphor at the slice.
-  const cGraphite = new THREE.Color(0x3a3d42); // cool mid-graphite (body)
-  const cGraphiteHi = new THREE.Color(0x9aa0a8); // lit graphite crest (value, not hue)
-  const cAmber = new THREE.Color(0xffb454); // --amber phosphor (scan slice only)
+  const cGraphite = new THREE.Color(opts.colors?.base ?? 0x3a3d42); // body / sulci
+  const cGraphiteHi = new THREE.Color(opts.colors?.hi ?? 0x9aa0a8); // lit crest
+  const cAmber = new THREE.Color(opts.colors?.accent ?? 0xffb454); // scan slice only
 
   const uniforms = {
     uTime: { value: 0 },
@@ -407,7 +439,7 @@ export function initBrain(opts: InitBrainOpts): BrainHandle {
   // ----- post: cold exam light + HALVED bloom (old hero used 0.3) ----------
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.15, 0.4, 0.26);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), opts.bloom ?? 0.15, 0.4, 0.26);
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
 
@@ -438,9 +470,11 @@ export function initBrain(opts: InitBrainOpts): BrainHandle {
   // Map each anatomical anchor → screen px (relative to the canvas box) and
   // publish as --cx/--cy on the matching [data-caliper] child. We do not draw.
   const caliperEls = new Map<string, HTMLElement>();
-  for (const a of ANCHORS) {
-    const el = caliperLayer.querySelector<HTMLElement>(`[data-caliper="${a.key}"]`);
-    if (el) caliperEls.set(a.key, el);
+  if (caliperLayer) {
+    for (const a of ANCHORS) {
+      const el = caliperLayer.querySelector<HTMLElement>(`[data-caliper="${a.key}"]`);
+      if (el) caliperEls.set(a.key, el);
+    }
   }
   function projectCalipers() {
     if (caliperEls.size === 0) return;
@@ -502,18 +536,24 @@ export function initBrain(opts: InitBrainOpts): BrainHandle {
       uniforms.uIntro.value = Math.max(0, uniforms.uIntro.value - dt / 1.6);
     }
 
-    // pull scan target from hero scroll each frame
-    scanTarget = clamp01(getScrollTSafe());
-    const goalX = SCAN_MIN + (SCAN_MAX - SCAN_MIN) * scanTarget;
-    // damped-spring integrate toward goalX
-    const damping = 2 * SPRING_ZETA * Math.sqrt(SPRING_K);
-    const accel = SPRING_K * (goalX - scanPos) - damping * scanVel;
-    scanVel += accel * dt;
-    scanPos += scanVel * dt;
-    uniforms.uScanX.value = scanPos;
+    if (scanOn) {
+      // pull scan target from hero scroll each frame
+      scanTarget = clamp01(getScrollTSafe());
+      const goalX = SCAN_MIN + (SCAN_MAX - SCAN_MIN) * scanTarget;
+      // damped-spring integrate toward goalX
+      const damping = 2 * SPRING_ZETA * Math.sqrt(SPRING_K);
+      const accel = SPRING_K * (goalX - scanPos) - damping * scanVel;
+      scanVel += accel * dt;
+      scanPos += scanVel * dt;
+      uniforms.uScanX.value = scanPos;
+    } else {
+      // cinematic: park the plane far in FRONT so nothing dims or ignites —
+      // the whole specimen reads as one uniformly lit, glowing cloud.
+      uniforms.uScanX.value = SCAN_MAX + 60;
+    }
 
-    // slow turntable — gentle continuous Y rotation, cold and steady
-    points.rotation.y += dt * 0.12;
+    // slow turntable — gentle continuous Y rotation
+    points.rotation.y += dt * rotateSpeed;
 
     projectCalipers();
     composer.render();
@@ -526,9 +566,13 @@ export function initBrain(opts: InitBrainOpts): BrainHandle {
     // turntable angled to read as a 3/4 lateral specimen, single render.
     uniforms.uIntro.value = 0;
     points.rotation.y = -0.35; // posed 3/4 view, anterior toward camera-right
-    const t = reduceMotion ? 0.5 : clamp01(getScrollTSafe());
-    scanPos = SCAN_MIN + (SCAN_MAX - SCAN_MIN) * t;
-    uniforms.uScanX.value = scanPos;
+    if (scanOn) {
+      const t = reduceMotion ? 0.5 : clamp01(getScrollTSafe());
+      scanPos = SCAN_MIN + (SCAN_MAX - SCAN_MIN) * t;
+      uniforms.uScanX.value = scanPos;
+    } else {
+      uniforms.uScanX.value = SCAN_MAX + 60;
+    }
     points.updateMatrixWorld(true);
     projectCalipers();
     composer.render();
