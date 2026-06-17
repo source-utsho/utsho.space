@@ -1,0 +1,149 @@
+---
+// THROWAWAY PROTOTYPE — "THE INK RUNS" hero.
+// Near-static typeset confession. Black page, monumental type, a wet ink blot
+// that blooms and then seeds the brain. Quiet, warm-confessional. A feel-test.
+import { meta } from "../../data/portfolio";
+const calKeys = ["prefrontal","broca","motor","hippocampus","occipital","cerebellum"];
+const ledger = [
+  { k: "INTERNET, MONTHLY", v: "1/12 of my mother's salary" },
+  { k: "NASA ROVER", v: "flight cancelled, 2 days out", strike: true },
+  { k: "→ REWRITE", v: "ventilator, deployed" },
+  { k: "HEAT SHIELD", v: "1000°F, held" },
+  { k: "GLOVE, SATISFACTION", v: "65% (taught me more than the demos)", red: true },
+  { k: "MENTEES", v: "200+, on Pis we built ourselves" },
+];
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>THE INK RUNS — prototype · utsho.space</title>
+<meta name="robots" content="noindex" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box;margin:0}
+  :root{--bg:#0A0A0A;--bone:#F2EFE9;--ink:#2733FF;--red:#E84B3C;--dim:#6c6a66}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--bone);font-family:'IBM Plex Mono',monospace;-webkit-font-smoothing:antialiased}
+  section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8vh 7vw;position:relative}
+
+  /* ---- hero ---- */
+  .hero-h{font-family:'Archivo',system-ui,sans-serif;font-weight:900;font-size:clamp(2.6rem,11vw,9rem);line-height:.95;letter-spacing:-.02em;color:var(--bone);max-width:14ch}
+  .blot{display:inline-block;width:.32em;height:.32em;border-radius:50%;background:var(--ink);vertical-align:baseline;transform:scale(0);transform-origin:center;animation:bloom 1s cubic-bezier(.2,.8,.2,1) .9s forwards;box-shadow:0 0 28px rgba(39,51,255,.6)}
+  @keyframes bloom{to{transform:scale(1)}}
+  .foot{font-size:13px;color:var(--dim);letter-spacing:.04em;margin-top:2rem;max-width:48ch;line-height:1.7}
+  .said{font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(1.2rem,3vw,2rem);color:var(--bone);margin-top:1rem}
+  .cue{position:absolute;bottom:2.4rem;left:7vw;font-size:10px;letter-spacing:.24em;color:var(--dim)}
+  .topline{position:absolute;top:6vh;left:7vw;right:7vw;display:flex;justify-content:space-between;font-size:10.5px;letter-spacing:.08em;color:var(--dim)}
+  .topline b{color:var(--bone);font-weight:500}
+
+  /* ---- artifact (brain) ---- */
+  .artifact{align-items:center;text-align:center;overflow:hidden}
+  #gl{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:0;transition:opacity 1.6s ease}
+  .artifact.in #gl{opacity:1}
+  .caliper-layer{position:absolute;inset:0;opacity:0;pointer-events:none}
+  .art-label{position:relative;z-index:2}
+  .art-num{font-size:11px;letter-spacing:.2em;color:var(--ink);filter:brightness(1.6)}
+  .art-h{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(1.6rem,5vw,3.2rem);margin-top:.6rem;color:var(--bone)}
+  .art-sub{font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(1.1rem,2.4vw,1.5rem);color:#b9b6af;margin-top:.6rem}
+
+  /* ---- ledger ---- */
+  .ledger{gap:0}
+  .led-h{font-size:11px;letter-spacing:.2em;color:var(--dim);margin-bottom:2rem}
+  .row{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:baseline;padding:1rem 0;border-top:1px solid #1c1c1c}
+  .row .k{font-size:12px;letter-spacing:.05em;color:var(--dim)}
+  .row .v{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(1rem,2.6vw,1.6rem);color:var(--bone);text-align:right}
+  .row.strike .v{text-decoration:line-through;text-decoration-color:var(--red);color:var(--dim)}
+  .row.red .v{color:var(--red)}
+
+  /* ---- closer ---- */
+  .closer{align-items:flex-start}
+  .plinth{border:1px dashed #2a2a2a;border-radius:2px;padding:1.4rem 1.6rem;font-size:clamp(11px,2vw,14px);letter-spacing:.06em;color:var(--bone)}
+  .back{margin-top:1.6rem;font-size:12px;color:var(--dim);text-decoration:none}
+  .back:hover{color:var(--ink);filter:brightness(1.6)}
+
+  .cmpbar{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);z-index:50;display:flex;gap:.5rem;align-items:center;background:rgba(10,10,10,.86);backdrop-filter:blur(8px);border:1px solid #2a2a2a;border-radius:999px;padding:.4rem .5rem .4rem 1rem;font-size:10.5px}
+  .cmpbar b{color:var(--ink);filter:brightness(1.7);letter-spacing:.1em}
+  .cmpbar a{color:#cfcdc7;text-decoration:none;border:1px solid #2a2a2a;border-radius:999px;padding:.35rem .7rem}
+  .cmpbar a.here,.cmpbar a:hover{border-color:var(--bone);color:var(--bone)}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.blot{animation:none;transform:scale(1)}.reveal{opacity:1;transform:none;transition:none}#gl{opacity:1}}
+</style>
+</head>
+<body>
+  <!-- HERO -->
+  <section>
+    <div class="topline"><span><b>{meta.fullName}</b> · COMPUTER ENGINEERING · ROSE-HULMAN ’28</span><span>RÉSUMÉ · EMAIL</span></div>
+    <h1 class="hero-h">MY FIRST CODE WAS WRITTEN IN INK<span class="blot"></span></h1>
+    <p class="foot">Thakurgaon, Bangladesh. No computer. A library book and a pen. I wrote programs I had no machine to run, and ran them in my head.</p>
+    <p class="said">It got weirder from there.</p>
+    <div class="cue">scroll — the ink runs ↓</div>
+  </section>
+
+  <!-- ARTIFACT 00 · the brain -->
+  <section class="artifact reveal" id="art">
+    <canvas id="gl"></canvas>
+    <div class="caliper-layer" aria-hidden="true">{calKeys.map((k) => (<span data-caliper={k}></span>))}</div>
+    <div class="art-label">
+      <div class="art-num">ARTIFACT 00</div>
+      <div class="art-h">THE FIRST MACHINE</div>
+      <div class="art-sub">For years, the only hardware I could run code on.</div>
+    </div>
+  </section>
+
+  <!-- LEDGER -->
+  <section class="ledger">
+    <div class="led-h reveal">THE LEDGER · TWELVE TRUE NUMBERS, SIX SHOWN</div>
+    {ledger.map((r) => (
+      <div class={`row reveal${r.strike ? " strike" : ""}${r.red ? " red" : ""}`}>
+        <span class="k">{r.k}</span><span class="v">{r.v}</span>
+      </div>
+    ))}
+  </section>
+
+  <!-- CLOSER -->
+  <section class="closer">
+    <div class="plinth reveal">FUTURE ACQUISITION — one (1) dog, walked, Mars. Date pending.</div>
+    <a class="back reveal" href="/">← back to the live site</a>
+  </section>
+
+  <nav class="cmpbar">
+    <b>PROTOTYPE</b>
+    <a href="/try/run/">← THE RUN</a>
+    <a class="here">THE INK</a>
+  </nav>
+
+  <script>
+    import { initBrain } from "../../scripts/brain";
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => { if (e.isIntersecting) e.target.classList.add("in"); });
+    }, { threshold: 0.18 });
+    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+    const art = document.getElementById("art");
+    let booted = false;
+    const boot = () => {
+      if (booted) return; booted = true;
+      try {
+        initBrain({
+          canvas: document.getElementById("gl"),
+          caliperLayer: document.querySelector(".caliper-layer"),
+          reduceMotion: reduce,
+          getScrollT: () => {
+            const r = art.getBoundingClientRect();
+            return Math.min(1, Math.max(0, 1 - r.top / (r.height || innerHeight)));
+          },
+        });
+      } catch (err) { console.warn("brain failed", err); }
+    };
+    new IntersectionObserver((es) => {
+      es.forEach((e) => { if (e.isIntersecting) boot(); });
+    }, { rootMargin: "300px" }).observe(art);
+  </script>
+</body>
+</html>
